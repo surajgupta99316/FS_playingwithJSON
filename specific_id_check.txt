@@ -1,0 +1,31 @@
+////////////////New way for viewing specific data in json using FS inbuild
+const fs = require('fs');
+const express = require('express');
+const app = express();
+
+app.get('/new/:id', (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const data = fs.readFileSync('test.json', 'utf8');
+    const jsonData = JSON.parse(data);
+
+    if (id) {
+      const foundData = jsonData.find(item => item.id === parseInt(id));
+      if (foundData) {
+        res.status(200).json(foundData);
+      } else {
+        res.status(404).send('Data not found');
+      }
+    } else {
+      res.status(200).json(jsonData);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Something went wrong');
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
